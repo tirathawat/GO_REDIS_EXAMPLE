@@ -10,6 +10,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -35,6 +36,12 @@ func getConfig() fiber.Config {
 	}
 }
 
+func initRedis() *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+}
+
 func setupFiber() error {
 	app := fiber.New(getConfig())
 	app.Use(cors.New())
@@ -42,7 +49,9 @@ func setupFiber() error {
 
 	db := database.New()
 
-	demoRepo := repositories.NewDemoRepository(db)
+	redisClient := initRedis()
+
+	demoRepo := repositories.NewDemoRepositoryRedis(db, redisClient)
 
 	demoService := demoService.NewDemoService(demoRepo)
 
