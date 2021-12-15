@@ -34,8 +34,8 @@ func (r *router) init() {
 }
 
 func (r *router) setupDemo() {
-	_ = r.Router.Group("demo")
+	group := r.Router.Group("demo")
 	{
-
+		group.Get("/list", r.DemoHandler.GetDemo)
 	}
 }
